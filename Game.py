@@ -42,10 +42,11 @@ functions:
 moveObject(position):
 '''
 class Tile:
-    def __init__(self,H,W,background, character):
+    def __init__(self,H,W,background, character, positionX,positionY):
         self.height = H
         self.width = W
-
+        self.posX = positionX
+        self.posY = positionY
         #background image (string of image in directory)
         self.background = 0
 
@@ -60,7 +61,11 @@ class Tile:
 
     def changeCharacter(self,character):
         self.character = character
-        self.character.image = pygame.transform.scale(self.character.image, (self.width,self.height))
+        if character is 0:
+            return
+        else:
+            self.character.image = pygame.transform.scale(self.character.image, (self.width,self.height))
+
     def checkFilled(self):
         return self.isfilled
 
@@ -77,9 +82,37 @@ class MapGrid:
             # in this row
             self.grid.append([])
             for column in range(self.gridWidth):
-                temp = Tile(tilesize,tilesize,0,0)
+                temp = Tile(tilesize,tilesize,0,0,column,row)
                 temp.changeBackground('Square.jpg')
-                self.grid[row] = temp # Append a cell
+                self.grid[row].append(temp) # Append a cell
+
+    def moveCharacter(self, pos1X,pos1Y, pos2X,pos2Y):
+        destination = self.grid[pos2X][pos2Y]
+        source = self.grid[pos1X][pos1Y]
+        if(destination.isfilled is True):
+            print("FILLED")
+            return False
+        else:
+            destination.changeCharacter(source.character)
+            destination.isfilled = True
+            source.changeCharacter(0)
+            source.isfilled = False
+            return True
+
+#attackCharacter(whats atacking, whats being attacked)
+    def attackCharacter(self, victim, attacker):
+        #in range
+        if attacker.character.range >= (abs(victim.posX - attacker.posX) + abs(victim.posY - attacker.posY)):
+            #attack
+            victim.character.hp -= attacker.character.atk
+            if(victim.character.hp <= 0):
+                print("DEAD")
+            else:
+                print("Victim's HP: ", victim.character.hp)
+                #remove from map
+            return True
+        else:
+            return False
 
 
 #colors
@@ -100,12 +133,17 @@ grid = GameMap.grid
 clock = pygame.time.Clock()
 
 def main():
+
+
     character1 = Character('Montblanc.jpg',0,0,0,0,0,0)
     character2 = Character('Circle.png', 1, 1, 1, 1, 1,1 )
     interchange = False
     # Set row 1, cell 5 to one. (Remember rows and
     # column numbers start at zero.)
     # Initialize pygame
+    Tile1 = grid[1][2]
+    Tile1.changeCharacter(character1)
+    Tile1.isfilled = True
     pygame.init()
 
     # Set the HEIGHT and WIDTH of the screen
@@ -131,11 +169,15 @@ def main():
                 row = pos[1] // (GameMap.tileHeight)
                 # Set that location to one
 
-                grid[row][column].isfilled = True
-
-                # if interchange is False:
-                grid[row][column].changeCharacter(character1)
-
+                # if grid[row][column].isfilled is True:
+                #     print("IS FUCKIN FILLED ALREADY")
+                # else:
+                #     grid[row][column].isfilled = True
+                #
+                #     # if interchange is False:
+                #     grid[row][column].changeCharacter(character2)
+                GameMap.moveCharacter(Tile1.posX,Tile1.posY,row,column)
+                Tile1 = grid[column][row]
                 print("Click ", pos, "Grid coordinates: ", row, column)
 
         # Set the screen background
@@ -152,8 +194,9 @@ def main():
                                   (GameMap.tileHeight) * row,
                                   GameMap.tileWidth,
                                   GameMap.tileHeight])
-                if grid[row][column].checkFilled() is True:
-                    screen.blit(grid[row][column].character.image, ((column*GameMap.tileHeight), (row*GameMap.tileWidth)))
+                temp = grid[row][column]
+                if temp.checkFilled() is True:
+                    screen.blit(temp.character.image, ((column*GameMap.tileHeight), (row*GameMap.tileWidth)))
 
         # Limit to 60 frames per second
         clock.tick(60)
