@@ -105,15 +105,11 @@ def startGame():
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
             elif event.type is pygame.KEYDOWN:
-                if event.key is pygame.K_x:
-                    if currentPlayer.getChosenTile() is None:
-                        print()
-                    else:
+                if event.key is pygame.K_x: #MOVE
+                    if currentPlayer.getChosenTile() is not None:
                         theGame.changeMode(0)
-                if event.key is pygame.K_z:
-                    if currentPlayer.getChosenTile() is None:
-                        print()
-                    else:
+                if event.key is pygame.K_z: #ATTACK
+                    if currentPlayer.getChosenTile() is not None:
                         theGame.changeMode(1)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # User clicks the mouse. Get the position
@@ -128,10 +124,18 @@ def startGame():
                     if theGame.currentMode is 1:
                         if currentPlayer.getChosenTile is not None:
                             print("Attacking")
+                            result = GameMap.attackCharacter(grid[row][column].character, currentPlayer.getChosenTile())
+                            if result:
+                                theGame.changeMode(2)
                     #trying to move
                     if theGame.currentMode is 0:
                         if currentPlayer.getChosenTile is not None:
                             print("Moving")
+                            result = GameMap.moveCharacter(currentPlayer.getChosenTile(), currentPlayer.getChosenTile().posX,
+                                                  currentPlayer.getChosenTile().posY, column, row)
+                            print(result)
+                            if result is True:
+                                theGame.changeMode(2)
                     print("IS FILLED")
                     #hes trying to click on a unit
                     currentTile = grid[row][column]
@@ -141,6 +145,7 @@ def startGame():
                         print("inside")
                         currentTile.changeHighlighted(True)
                         currentPlayer.lookAtTile(currentTile)
+                        theGame.changeMode(2)
                     else:
                         print("not in team")
                 else:
