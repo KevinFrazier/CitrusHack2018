@@ -122,14 +122,14 @@ def startGame():
                 if grid[row][column].isfilled is True:
                     #if trying to attack
                     if theGame.currentMode is 1:
-                        if currentPlayer.getChosenTile is not None:
+                        if currentPlayer.getChosenTile() is not None:
                             print("Attacking")
                             result = GameMap.attackCharacter(grid[row][column].character, currentPlayer.getChosenTile())
                             if result:
                                 theGame.changeMode(2)
                     #trying to move
                     if theGame.currentMode is 0:
-                        if currentPlayer.getChosenTile is not None:
+                        if currentPlayer.getChosenTile() is not None:
                             print("Moving")
                             result = GameMap.moveCharacter(currentPlayer.getChosenTile(), currentPlayer.getChosenTile().posX,
                                                   currentPlayer.getChosenTile().posY, column, row)
@@ -150,7 +150,7 @@ def startGame():
                         print("not in team")
                 else:
                     if theGame.currentMode is not 2:
-                        if currentPlayer.getChosenTile is not None:
+                        if currentPlayer.getChosenTile() is not None:
                             theGame.changeMode(2)
                             currentPlayer.getChosenTile().changeHighlighted(False)
 
