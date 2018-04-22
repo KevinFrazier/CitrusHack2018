@@ -52,7 +52,7 @@ def startGame():
     clock = pygame.time.Clock()
     totalUnits = 0
     character1 = Character('Montblanc.jpg', 100, 10, 1, 1, 1, 3,totalUnits) #image, hp, atk, mp, abilities, movement, range
-    totalUnits +=1
+    totalUnits += 1
     character2 = Character('shara.jpg', 100, 10, 1, 1, 1, 3,totalUnits)
     totalUnits += 1
     character3 = Character('circle.png',100, 10, 1, 1, 1, 3,totalUnits)
