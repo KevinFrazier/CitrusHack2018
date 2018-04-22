@@ -19,8 +19,9 @@ class Tile:
 
         self.highlighted = False
 
-    def changeHightlighted(self, BOOL):
+    def changeHighlighted(self, BOOL):
         self.highlighted = BOOL
+
     def isHighlighted(self):
         return self.highlighted
 

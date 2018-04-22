@@ -1,4 +1,9 @@
 import pygame
+from GameSequence import GameSequence
+from Player import Player
+from Tile import Tile
+from MapGrid import MapGrid
+from Character import Character
 import sys
 import itertools
 
@@ -9,14 +14,12 @@ Task List:
     design -> (circles)
     appropriately put it in map grid
     then graphics
-
 Map ->
  make grid
  design (2D grid of 45 degrees, skewed squared)
  scaling
  cosmetics
  put into graphics
-
 '''
 
 '''
@@ -24,131 +27,35 @@ characters
 variables: hp, atk, mp, abilities (array),  weakness, movement, range,
 other variables: sprite, animation 
 '''
-
-
-class Character:
-    def __init__(self, image, hp, atk, mp, abilities, movement, rge, id):
-        self.hp = hp
-        self.atk = atk
-        self.mp = mp
-        self.abilities = abilities
-        self.movement = movement
-        self.range = rge
-        self.image = pygame.image.load(image)
-        self.id = id
-        self.hasMoved = False
-
-
 '''
 MapGrid
-variables: length, width,'
+variables: length, width
 functions:
 moveObject(position):
 '''
 
+def startGame():
+    # colors
+    BLACK = (0, 0, 0)
+    WHITE = (255, 255, 255)
+    GREEN = (0, 255, 0)
+    # graphics
+    '''
+    1. make grid
+    2. put objects in grid
+    3. manipulating objects in grid
+    '''
 
-class Tile:
-    def __init__(self, h, w, bg, chara, posX, posY, move):
-        self.height = h
-        self.width = w
+    GameMap = MapGrid(50, 50, 20)
+    grid = GameMap.grid
 
-        # background image (string of image in directory)
-        self.background = bg
-
-        # character object
-        self.character = chara
-
-        self.posX = posX
-        self.posY = posY
-        self.move = move
-        self.isfilled = False
-
-    def changeBackground(self, background):
-        self.background = pygame.image.load(background)
-        self.background = pygame.transform.scale(self.background, (self.width, self.height))
-
-    def changeCharacter(self, character):
-        self.character = character
-        if character is 0:
-            return
-        else:
-            self.character.image = pygame.transform.scale(self.character.image, (self.width, self.height))
-
-    def changeMove(self, move):
-        self.move = move
-
-    def isFilled(self):
-        return self.isfilled
-
-
-class MapGrid:
-    def __init__(self, H, W, tilesize):
-        self.gridHeight = H
-        self.gridWidth = W
-        self.tileWidth = tilesize
-        self.tileHeight = tilesize
-
-        self.grid = []
-        for row in range(self.gridHeight):
-            # Add an empty array that will hold each cell
-            # in this row
-            self.grid.append([])
-            for column in range(self.gridWidth):
-                temp = Tile(tilesize, tilesize, 0, 0, column, row, True)
-                temp.changeBackground('Square.jpg')
-                self.grid[row].append(temp)  # Append a cell
-
-    def moveCharacter(self, pos1X, pos1Y, pos2X, pos2Y):
-        destination = self.grid[pos2Y][pos2X]
-        source = self.grid[pos1Y][pos1X]
-        if destination.isfilled is True:
-            print("FILLED")
-            return False
-        else:
-            destination.changeCharacter(source.character)
-            destination.isfilled = True
-            source.changeCharacter(0)
-            source.isfilled = False
-            return True
-
-    # attackCharacter(whats attacking, whats being attacked)
-    def attackCharacter(self, victim, attacker):
-        # in range
-        if attacker.character.range >= (abs(victim.posX - attacker.posX) + abs(victim.posY - attacker.posY)):
-            # attack
-            victim.character.hp -= attacker.character.atk
-            if victim.character.hp <= 0:
-                print("DEAD")
-            else:
-                print("Attacker's Atk: ", attacker.character.hp)
-                print("Victim's HP: ", victim.character.hp)
-                # remove from map
-            return True
-        else:
-            return False
-
-
-# colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-# graphics
-'''
-1. make grid
-2. put objects in grid
-3. manipulating objects in grid
-'''
-
-GameMap = MapGrid(50, 50, 20)
-grid = GameMap.grid
-
-clock = pygame.time.Clock()
-
-
-def main():
-    character1 = Character('Montblanc.jpg', 100, 10, 1, 1, 1, 3) #image, hp, atk, mp, abilities, movement, range
-    character2 = Character('shara.jpg', 100, 10, 1, 1, 1, 3)
-
+    clock = pygame.time.Clock()
+    totalUnits = 0
+    character1 = Character('Montblanc.jpg', 100, 10, 1, 1, 1, 3,totalUnits) #image, hp, atk, mp, abilities, movement, range
+    totalUnits +=1
+    character2 = Character('shara.jpg', 100, 10, 1, 1, 1, 3,totalUnits)
+    totalUnits += 1
+    character3 = Character('circle.png',100, 10, 1, 1, 1, 3,totalUnits)
     #player1 init
     player1 = grid[1][2]
     player1.changeCharacter(character1)
@@ -159,8 +66,24 @@ def main():
     player2.changeCharacter(character2)
     player2.isfilled = True
 
-    #object1 init
-    grid[3][4].changeMove(False)
+    player3 = grid[5][4]
+    player3.changeCharacter(character3)
+    player3.isfilled = True
+
+    P1 = Player(1)
+    P2 = Player(2)
+
+    P1.addMember(player1.character)
+    P1.addMember(player3.character)
+    P2.addMember(player2.character)
+    print("P1: ")
+    print(P1.getTeam())
+    print("P2: ")
+    print(P2.getTeam())
+    theGame= GameSequence((P1, P2))
+    theGame.startGame()
+    #should be P1's turn
+    theGame.startTurn()
 
     # Initialize pygame
     pygame.init()
@@ -187,15 +110,25 @@ def main():
                 column = pos[0] // GameMap.tileWidth
                 row = pos[1] // GameMap.tileHeight
 
-                if grid[row][column].move is True:
-                    if grid[row][column].isfilled is True:
-                        if GameMap.attackCharacter(player2, player1) is False:
-                            print("Not in range")
+
+                if grid[row][column].isfilled is True:
+                    print("IS FILLED")
+                    #hes trying to click on a unit
+                    currentPlayer = theGame.getCurrentPlayer()
+                    currentTile = grid[row][column]
+                    print("player's team: ")
+                    print(currentPlayer.getTeam())
+                    if currentPlayer.isInTeam(currentTile.character):
+                        print("inside")
+                        currentTile.changeHighlighted(True)
                     else:
-                        GameMap.moveCharacter(player1.posX, player1.posY, column, row)
-                        player1 = grid[row][column]
-                else:
-                    print("Not movable")
+                        print("not in team")
+
+                #     if GameMap.attackCharacter(player2, player1) is False:
+                #         print("Not in range")
+                # else:
+                #     GameMap.moveCharacter(player1.posX, player1.posY, column, row)
+                #     player1 = grid[row][column]
                 print("Click ", pos, "Grid coordinates: ", row, column)
 
         # Set the screen background
@@ -204,17 +137,15 @@ def main():
         # Draw the grid
         for row in range(GameMap.gridHeight):
             for column in range(GameMap.gridWidth):
-                color = BLACK
 
-                pygame.draw.rect(screen,
-                                 color,
-                                 [GameMap.tileWidth * column,
-                                  GameMap.tileHeight * row,
-                                  GameMap.tileWidth,
-                                  GameMap.tileHeight])
                 temp = grid[row][column]
                 if temp.isFilled() is True:
                     screen.blit(temp.character.image, ((column * GameMap.tileWidth), (row * GameMap.tileHeight)))
+                    if temp.isHighlighted() is True:
+                        print("HIGHLIGHTED")
+                        pygame.draw.rect(screen,(0,255,0),[GameMap.tileWidth * column,GameMap.tileHeight * row,GameMap.tileWidth,GameMap.tileHeight])
+                else:
+                    pygame.draw.rect(screen,(255,255,255),[GameMap.tileWidth * column,GameMap.tileHeight * row,GameMap.tileWidth,GameMap.tileHeight])
 
         # Limit to 60 frames per second
         clock.tick(60)
@@ -225,6 +156,9 @@ def main():
     # Be IDLE friendly. If you forget this line, the program will 'hang'
     # on exit.
     pygame.quit()
+
+def main():
+    startGame()
 
 
 if __name__ == "__main__":

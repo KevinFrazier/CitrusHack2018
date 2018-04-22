@@ -5,8 +5,9 @@ class Player:
         self.team = []
         self.isTurn = False
         self.highlightedChar = None
+
     def addMember(self, character):
-        if type(character) is "<class '__main__.Character'>":
+        if isinstance(character, Character):
             self.team.append(character)
             print("added team member")
             return True
@@ -20,12 +21,16 @@ class Player:
         return self.isTurn
 
     def isInTeam(self, character):
-        if type(character) is "<class '__main__.Character'>":
+        print("checking...")
+        if isinstance(character, Character):
+            print("is character")
             for member in self.team:
                 if member is character:
+                    print("found!")
                     return True
 
         return False
-
+    def getTeam(self):
+        return self.team
     def lookAtChar(self,character):
         self.highlightedChar = character
