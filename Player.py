@@ -1,10 +1,11 @@
 from Character import Character
+from Tile import Tile
 class Player:
     def __init__(self, ID):
         self.player = ID
         self.team = []
         self.isTurn = False
-        self.highlightedChar = None
+        self.highlightedTile = None
 
     def addMember(self, character):
         if isinstance(character, Character):
@@ -32,5 +33,15 @@ class Player:
         return False
     def getTeam(self):
         return self.team
-    def lookAtChar(self,character):
-        self.highlightedChar = character
+
+    def lookAtTile(self,tile):
+        # if(isinstance(tile,Tile)):
+        if(isinstance(tile,Tile)):
+            self.highlightedTile = tile
+            print("highlighted: ")
+            print(tile)
+            return True
+        return False
+
+    def getChosenTile(self):
+        return self.highlightedTile

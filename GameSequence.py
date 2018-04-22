@@ -1,8 +1,11 @@
 from Player import Player
+
+
+
+
 class GameSequence:
     '''
     GameSequence summary: Keeps track of player turn sequence and Game end
-
     Functionalities
         -start game
         -must start turns
@@ -18,7 +21,15 @@ class GameSequence:
 
         self.players = ArrayofPlayers
         self.currentTurn = None
+        NOTHING = 2
+        ATTACK = 1
+        MOVE = 0
 
+        self.modes = [MOVE, ATTACK,NOTHING]
+        self.currentMode = MOVE
+
+    def changeMode(self,number):
+        self.currentMode = self.modes[number]
     def startGame(self):
         self.currentTurn = 0
         '''
@@ -26,7 +37,6 @@ class GameSequence:
 
         '''
         return
-
     def startTurn(self):
         self.players[self.currentTurn].changeTurn(True)
         '''

@@ -43,3 +43,6 @@ class Tile:
 
     def isFilled(self):
         return self.isfilled
+
+    def getPosition(self):
+        return (self.posX,self.posY)
