@@ -33,7 +33,7 @@ class Character:
         self.abilities = abilities2
         self.movement = movement2
         self.range = range2
-        self.image = image2
+        self.image = pygame.image.load(image2)
 
 '''
 MapGrid
@@ -45,16 +45,24 @@ class Tile:
     def __init__(self,H,W,background, character):
         self.height = H
         self.width = W
+
+        #background image (string of image in directory)
         self.background = 0
+
+        #character object
         self.character = 0
+
         self.isfilled = False
+
     def changeBackground(self,background):
         self.background = pygame.image.load(background)
         self.background = pygame.transform.scale(self.background, (self.width,self.height))
-    def changeCharacter(self,character):
-        self.character = pygame.image.load(character)
-        self.character = pygame.transform.scale(self.character, (self.width, self.height))
 
+    def changeCharacter(self,character):
+        self.character = character
+        self.character.image = pygame.transform.scale(self.character.image, (self.width,self.height))
+    def checkFilled(self):
+        return self.isfilled
 
 class MapGrid:
     def __init__(self, H, W, tilesize):
@@ -62,6 +70,7 @@ class MapGrid:
         self.gridWidth = W
         self.tileWidth = tilesize
         self.tileHeight = tilesize
+
         self.grid = []
         for row in range(self.gridHeight):
             # Add an empty array that will hold each cell
@@ -69,7 +78,8 @@ class MapGrid:
             self.grid.append([])
             for column in range(self.gridWidth):
                 temp = Tile(tilesize,tilesize,0,0)
-                self.grid[row].append(temp)  # Append a cell
+                temp.changeBackground('Square.jpg')
+                self.grid[row] = temp # Append a cell
 
 
 #colors
@@ -84,45 +94,17 @@ x . put objects in grid
 3. manipulating objects in grid
 '''
 
-"""
- Example program to show using an array to back a grid on-screen.
-
- Sample Python/Pygame Programs
- Simpson College Computer Science
- http://programarcadegames.com/
- http://simpson.edu/computer-science/
-
- Explanation video: http://youtu.be/mdTeqiWyFnc
-"""
-import pygame
-
-# Define some colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-
-# This sets the WIDTH and HEIGHT of each grid location
-WIDTH = 20
-HEIGHT = 20
-
-
-# This sets the margin between each cell
-MARGIN = 5
 GameMap = MapGrid(50, 50, 20)
-# Create a 2 dimensional array. A two dimensional
-# array is simply a list of lists.
 grid = GameMap.grid
-# Used to manage how fast the screen updates
+
 clock = pygame.time.Clock()
+
 def main():
     character1 = Character('Montblanc.jpg',0,0,0,0,0,0)
     character2 = Character('Circle.png', 1, 1, 1, 1, 1,1 )
     interchange = False
     # Set row 1, cell 5 to one. (Remember rows and
     # column numbers start at zero.)
-    grid[1][5] = 1
-
     # Initialize pygame
     pygame.init()
 
@@ -149,9 +131,10 @@ def main():
                 row = pos[1] // (GameMap.tileHeight)
                 # Set that location to one
 
-                grid[row][column] = 1
-                if(interchange == False):
-                    grid[row][column].changeCharacter(character1)
+                grid[row][column].isfilled = True
+
+                # if interchange is False:
+                grid[row][column].changeCharacter(character1)
 
                 print("Click ", pos, "Grid coordinates: ", row, column)
 
@@ -169,9 +152,8 @@ def main():
                                   (GameMap.tileHeight) * row,
                                   GameMap.tileWidth,
                                   GameMap.tileHeight])
-                if grid[row][column] == 1:
-                    screen.blit(image,((column*GameMap.tileHeight)
-                                        , (row*GameMap.tileWidth)))
+                if grid[row][column].checkFilled() is True:
+                    screen.blit(grid[row][column].character.image, ((column*GameMap.tileHeight), (row*GameMap.tileWidth)))
 
         # Limit to 60 frames per second
         clock.tick(60)
