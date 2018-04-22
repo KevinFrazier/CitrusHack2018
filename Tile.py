@@ -16,6 +16,16 @@ class Tile:
         self.move = move
         self.isfilled = False
 
+
+        self.highlighted = False
+
+    def changeHightlighted(self, BOOL):
+        self.highlighted = BOOL
+    def isHighlighted(self):
+        return self.highlighted
+
+
+
     def changeBackground(self, background):
         self.background = pygame.image.load(background)
         self.background = pygame.transform.scale(self.background, (self.width, self.height))
