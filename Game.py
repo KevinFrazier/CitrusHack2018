@@ -190,30 +190,30 @@ def startGame():
                 print(currentPlayer.getChosenTile().character.movement)
                 for i in range(currentTile.character.movement):
                     pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] - i), GameMap.tileHeight * position[1],
+                                     [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * position[1],
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] + i), GameMap.tileHeight * position[1],
+                                     [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * position[1],
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] - i),
+                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] - i -1),
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] + i),
+                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] + i +1),
                                       GameMap.tileWidth, GameMap.tileHeight])
 
                 for i in range(currentTile.character.movement - 1):
                     pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] + i), GameMap.tileHeight * (position[1] - i),
+                                     [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] - i -1),
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] + i), GameMap.tileHeight * (position[1] + i),
+                                     [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] + i+1) ,
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] - i), GameMap.tileHeight * (position[1] + i),
+                                     [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] + i+1),
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] - i), GameMap.tileHeight * (position[1] - i),
+                                     [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] - i-1),
                                       GameMap.tileWidth, GameMap.tileHeight])
 
                 pygame.draw.rect(screen, (0, 255, 0),
@@ -231,30 +231,30 @@ def startGame():
                 print(currentPlayer.getChosenTile().character.range)
                 for i in range(currentTile.character.range):
                     pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] - i), GameMap.tileHeight * position[1],
+                                     [GameMap.tileWidth * (position[0] - i -1), GameMap.tileHeight * position[1],
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] + i), GameMap.tileHeight * position[1],
+                                     [GameMap.tileWidth * (position[0] + i +1), GameMap.tileHeight * position[1],
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] - i),
+                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] - i-1),
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] + i),
+                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] + i+1),
                                       GameMap.tileWidth, GameMap.tileHeight])
 
                 for i in range(currentTile.character.range - 1):
                     pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] + i), GameMap.tileHeight * (position[1] - i),
+                                     [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] - i-1),
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] + i), GameMap.tileHeight * (position[1] + i),
+                                     [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] + i+1),
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] - i), GameMap.tileHeight * (position[1] + i),
+                                     [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] + i+1),
                                       GameMap.tileWidth, GameMap.tileHeight])
                     pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] - i), GameMap.tileHeight * (position[1] - i),
+                                     [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] - i -1),
                                       GameMap.tileWidth, GameMap.tileHeight])
                 pygame.draw.rect(screen, (0, 255, 0),
                                  [GameMap.tileWidth * position[0], GameMap.tileHeight * position[1], GameMap.tileWidth,
