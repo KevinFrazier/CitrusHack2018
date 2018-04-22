@@ -101,6 +101,8 @@ def startGame():
     # -------- Main Program Loop -----------
     while not done:
         currentPlayer = theGame.getCurrentPlayer()
+        # print("WHOS TURN: ")
+        # print(currentPlayer.player)
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
@@ -111,6 +113,9 @@ def startGame():
                 if event.key is pygame.K_z: #ATTACK
                     if currentPlayer.getChosenTile() is not None:
                         theGame.changeMode(1)
+                if event.key is pygame.K_c: #END TURN
+                    print("ENDING TURN")
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # User clicks the mouse. Get the position
                 pos = pygame.mouse.get_pos()
@@ -119,23 +124,38 @@ def startGame():
                 row = pos[1] // GameMap.tileHeight
 
 
-                if grid[row][column].isfilled is True:
                     #if trying to attack
-                    if theGame.currentMode is 1:
-                        if currentPlayer.getChosenTile() is not None:
+                if theGame.currentMode is 1:
+                    if currentPlayer.getChosenTile() is not None:
+                        if grid[row][column].isfilled is True:
                             print("Attacking")
                             result = GameMap.attackCharacter(grid[row][column].character, currentPlayer.getChosenTile())
                             if result:
                                 theGame.changeMode(2)
-                    #trying to move
-                    if theGame.currentMode is 0:
-                        if currentPlayer.getChosenTile() is not None:
+                        else:
+                            theGame.changeMode(2)
+                            currentPlayer.getChosenTile().changeHighlighted(False)
+                            currentPlayer.highlightedTile = None
+                    else:
+                        theGame.changeMode(2)
+                #trying to move
+                elif theGame.currentMode is 0:
+                    if currentPlayer.getChosenTile() is not None:
+                        if grid[row][column].isfilled is True:
                             print("Moving")
-                            result = GameMap.moveCharacter(currentPlayer.getChosenTile(), currentPlayer.getChosenTile().posX,
-                                                  currentPlayer.getChosenTile().posY, column, row)
+                            result =  GameMap.moveCharacter(currentPlayer.getChosenTile(), currentPlayer.getChosenTile().posX,
+                                              currentPlayer.getChosenTile().posY, column, row)
                             print(result)
-                            if result is True:
+                            if result:
                                 theGame.changeMode(2)
+                        else:
+                            theGame.changeMode(2)
+                            currentPlayer.getChosenTile().changeHighlighted(False)
+                            currentPlayer.highlightedTile = None
+                    else:
+                        theGame.changeMode(2)
+
+                elif theGame.currentMode is 2:
                     print("IS FILLED")
                     #hes trying to click on a unit
                     currentTile = grid[row][column]
@@ -146,13 +166,14 @@ def startGame():
                         currentTile.changeHighlighted(True)
                         currentPlayer.lookAtTile(currentTile)
                         theGame.changeMode(2)
-                    else:
-                        print("not in team")
                 else:
-                    if theGame.currentMode is not 2:
-                        if currentPlayer.getChosenTile() is not None:
-                            theGame.changeMode(2)
-                            currentPlayer.getChosenTile().changeHighlighted(False)
+                    print("WTF")
+                #  else:
+                # if theGame.currentMode is not 2:
+                #     if currentPlayer.getChosenTile() is not None:
+                #         theGame.changeMode(2)
+                #         currentPlayer.getChosenTile().changeHighlighted(False)
+                #         currentPlayer.highlightedTile = None
 
                 #     if GameMap.attackCharacter(player2, player1) is False:
                 #         print("Not in range")
