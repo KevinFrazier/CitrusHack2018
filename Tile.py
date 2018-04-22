@@ -1,4 +1,3 @@
-import Game
 import pygame
 
 class Tile:

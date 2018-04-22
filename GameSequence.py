@@ -1,5 +1,5 @@
-import Game, Player
-class GameSequenece:
+from Player import Player
+class GameSequence:
     '''
     GameSequence summary: Keeps track of player turn sequence and Game end
 
@@ -34,8 +34,8 @@ class GameSequenece:
         '''
         return
 
-    def getTurn(self):
-        return self.currentTurn
+    def getCurrentPlayer(self):
+        return self.players[self.currentTurn]
 
     def changeTurn(self):
         self.players[self.currentTurn].changeTurn(False)

@@ -1,4 +1,4 @@
-import Tile
+from Tile import Tile
 
 class MapGrid:
     def __init__(self, H, W, tilesize):

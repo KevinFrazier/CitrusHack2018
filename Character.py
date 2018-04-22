@@ -11,3 +11,12 @@ class Character:
         self.image = pygame.image.load(image)
         self.id = id
         self.hasMoved = False
+
+
+        self.highlighted = False
+
+    def changeHightlighted(self, BOOL):
+        self.highlighted = BOOL
+
+    def isHighlighted(self):
+        return self.highlighted
