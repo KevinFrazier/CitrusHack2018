@@ -9,31 +9,33 @@ Task List:
     design -> (circles)
     appropriately put it in map grid
     then graphics
-    
+
 Map ->
  make grid
  design (2D grid of 45 degrees, skewed squared)
  scaling
  cosmetics
  put into graphics
- 
-'''
 
+'''
 
 '''
 characters
 variables: hp, atk, mp, abilities (array),  weakness, movement, range,
 other variables: sprite, animation 
 '''
+
+
 class Character:
-    def __init__(self, image2, hp2,atk2, mp2, abilities2, movement2, range2):
-        self.hp = hp2
-        self.atk = atk2
-        self.mp = mp2
-        self.abilities = abilities2
-        self.movement = movement2
-        self.range = range2
-        self.image = pygame.image.load(image2)
+    def __init__(self, image, hp, atk, mp, abilities, movement, rge):
+        self.hp = hp
+        self.atk = atk
+        self.mp = mp
+        self.abilities = abilities
+        self.movement = movement
+        self.range = rge
+        self.image = pygame.image.load(image)
+
 
 '''
 MapGrid
@@ -41,33 +43,38 @@ variables: length, width,'
 functions:
 moveObject(position):
 '''
+
+
 class Tile:
-    def __init__(self,H,W,background, character, positionX,positionY):
+    def __init__(self, H, W, background, character, positionX, positionY):
         self.height = H
         self.width = W
+
+        # background image (string of image in directory)
+        self.background = background
+
+        # character object
+        self.character = character
+
         self.posX = positionX
         self.posY = positionY
-        #background image (string of image in directory)
-        self.background = 0
-
-        #character object
-        self.character = 0
 
         self.isfilled = False
 
-    def changeBackground(self,background):
+    def changeBackground(self, background):
         self.background = pygame.image.load(background)
-        self.background = pygame.transform.scale(self.background, (self.width,self.height))
+        self.background = pygame.transform.scale(self.background, (self.width, self.height))
 
-    def changeCharacter(self,character):
+    def changeCharacter(self, character):
         self.character = character
         if character is 0:
             return
         else:
-            self.character.image = pygame.transform.scale(self.character.image, (self.width,self.height))
+            self.character.image = pygame.transform.scale(self.character.image, (self.width, self.height))
 
-    def checkFilled(self):
+    def isFilled(self):
         return self.isfilled
+
 
 class MapGrid:
     def __init__(self, H, W, tilesize):
@@ -82,14 +89,14 @@ class MapGrid:
             # in this row
             self.grid.append([])
             for column in range(self.gridWidth):
-                temp = Tile(tilesize,tilesize,0,0,column,row)
+                temp = Tile(tilesize, tilesize, 0, 0, column, row)
                 temp.changeBackground('Square.jpg')
-                self.grid[row].append(temp) # Append a cell
+                self.grid[row].append(temp)  # Append a cell
 
-    def moveCharacter(self, pos1X,pos1Y, pos2X,pos2Y):
-        destination = self.grid[pos2X][pos2Y]
-        source = self.grid[pos1X][pos1Y]
-        if(destination.isfilled is True):
+    def moveCharacter(self, pos1X, pos1Y, pos2X, pos2Y):
+        destination = self.grid[pos2Y][pos2X]
+        source = self.grid[pos1Y][pos1X]
+        if destination.isfilled is True:
             print("FILLED")
             return False
         else:
@@ -99,31 +106,31 @@ class MapGrid:
             source.isfilled = False
             return True
 
-#attackCharacter(whats atacking, whats being attacked)
+    # attackCharacter(whats attacking, whats being attacked)
     def attackCharacter(self, victim, attacker):
-        #in range
+        # in range
         if attacker.character.range >= (abs(victim.posX - attacker.posX) + abs(victim.posY - attacker.posY)):
-            #attack
+            # attack
             victim.character.hp -= attacker.character.atk
-            if(victim.character.hp <= 0):
+            if victim.character.hp <= 0:
                 print("DEAD")
             else:
+                print("Attacker's Atk: ", attacker.character.hp)
                 print("Victim's HP: ", victim.character.hp)
-                #remove from map
+                # remove from map
             return True
         else:
             return False
 
 
-#colors
-BLACK = (0,0,0)
-WHITE = (255,255,255)
+# colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
-#graphics
+# graphics
 '''
-
-x 1. make grid
-x . put objects in grid
+1. make grid
+2. put objects in grid
 3. manipulating objects in grid
 '''
 
@@ -132,23 +139,27 @@ grid = GameMap.grid
 
 clock = pygame.time.Clock()
 
+
 def main():
+    character1 = Character('Montblanc.jpg', 100, 10, 1, 1, 1, 3) #image, hp, atk, mp, abilities, movement, range
+    character2 = Character('shara.jpg', 100, 10, 1, 1, 1, 3)
 
+    #player1 init
+    player1 = grid[1][2]
+    player1.changeCharacter(character1)
+    player1.isfilled = True
 
-    character1 = Character('Montblanc.jpg',0,0,0,0,0,0)
-    character2 = Character('Circle.png', 1, 1, 1, 1, 1,1 )
-    interchange = False
-    # Set row 1, cell 5 to one. (Remember rows and
-    # column numbers start at zero.)
+    # player2 init
+    player2 = grid[2][3]
+    player2.changeCharacter(character2)
+    player2.isfilled = True
+
     # Initialize pygame
-    Tile1 = grid[1][2]
-    Tile1.changeCharacter(character1)
-    Tile1.isfilled = True
     pygame.init()
 
     # Set the HEIGHT and WIDTH of the screen
-    WINDOW_SIZE = [GameMap.tileWidth*GameMap.gridWidth,
-                   GameMap.tileHeight*GameMap.gridHeight]
+    WINDOW_SIZE = [GameMap.tileWidth * GameMap.gridWidth,
+                   GameMap.tileHeight * GameMap.gridHeight]
     screen = pygame.display.set_mode(WINDOW_SIZE)
 
     # Set title of screen
@@ -165,19 +176,15 @@ def main():
                 # User clicks the mouse. Get the position
                 pos = pygame.mouse.get_pos()
                 # Change the x/y screen coordinates to grid coordinates
-                column = pos[0] // (GameMap.tileWidth)
-                row = pos[1] // (GameMap.tileHeight)
-                # Set that location to one
+                column = pos[0] // GameMap.tileWidth
+                row = pos[1] // GameMap.tileHeight
 
-                # if grid[row][column].isfilled is True:
-                #     print("IS FUCKIN FILLED ALREADY")
-                # else:
-                #     grid[row][column].isfilled = True
-                #
-                #     # if interchange is False:
-                #     grid[row][column].changeCharacter(character2)
-                GameMap.moveCharacter(Tile1.posX,Tile1.posY,row,column)
-                Tile1 = grid[column][row]
+                if grid[row][column].isfilled is True:
+                    if GameMap.attackCharacter(player2, player1) is False:
+                        print("Not in range")
+                else:
+                    GameMap.moveCharacter(player1.posX, player1.posY, column, row)
+                    player1 = grid[row][column]
                 print("Click ", pos, "Grid coordinates: ", row, column)
 
         # Set the screen background
@@ -190,13 +197,13 @@ def main():
 
                 pygame.draw.rect(screen,
                                  color,
-                                 [(GameMap.tileWidth) * column,
-                                  (GameMap.tileHeight) * row,
+                                 [GameMap.tileWidth * column,
+                                  GameMap.tileHeight * row,
                                   GameMap.tileWidth,
                                   GameMap.tileHeight])
                 temp = grid[row][column]
-                if temp.checkFilled() is True:
-                    screen.blit(temp.character.image, ((column*GameMap.tileHeight), (row*GameMap.tileWidth)))
+                if temp.isFilled() is True:
+                    screen.blit(temp.character.image, ((column * GameMap.tileWidth), (row * GameMap.tileHeight)))
 
         # Limit to 60 frames per second
         clock.tick(60)
@@ -208,5 +215,6 @@ def main():
     # on exit.
     pygame.quit()
 
-if __name__== "__main__":
-  main()
+
+if __name__ == "__main__":
+    main()
