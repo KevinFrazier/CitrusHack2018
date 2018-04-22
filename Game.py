@@ -1,4 +1,7 @@
 import pygame
+import sys
+import itertools
+
 '''
 Task List:
 -heroes 
@@ -38,19 +41,35 @@ variables: length, width,'
 functions:
 moveObject(position):
 '''
+class Tile:
+    def __init__(self,H,W,background, character):
+        self.height = H
+        self.width = W
+        self.background = 0
+        self.character = 0
+        self.isfilled = False
+    def changeBackground(self,background):
+        self.background = pygame.image.load(background)
+        self.background = pygame.transform.scale(self.background, (self.width,self.height))
+    def changeCharacter(self,character):
+        self.character = pygame.image.load(character)
+        self.character = pygame.transform.scale(self.character, (self.width, self.height))
+
+
 class MapGrid:
     def __init__(self, H, W, tilesize):
         self.gridHeight = H
         self.gridWidth = W
-        self.tileHeight = tilesize
         self.tileWidth = tilesize
+        self.tileHeight = tilesize
         self.grid = []
         for row in range(self.gridHeight):
             # Add an empty array that will hold each cell
             # in this row
             self.grid.append([])
             for column in range(self.gridWidth):
-                self.grid[row].append(0)  # Append a cell
+                temp = Tile(tilesize,tilesize,0,0)
+                self.grid[row].append(temp)  # Append a cell
 
 
 #colors
@@ -90,15 +109,16 @@ HEIGHT = 20
 
 # This sets the margin between each cell
 MARGIN = 5
-GameMap = MapGrid(10, 10, 20)
+GameMap = MapGrid(50, 50, 20)
 # Create a 2 dimensional array. A two dimensional
 # array is simply a list of lists.
 grid = GameMap.grid
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
-
 def main():
-
+    character1 = Character('Montblanc.jpg',0,0,0,0,0,0)
+    character2 = Character('Circle.png', 1, 1, 1, 1, 1,1 )
+    interchange = False
     # Set row 1, cell 5 to one. (Remember rows and
     # column numbers start at zero.)
     grid[1][5] = 1
@@ -128,7 +148,11 @@ def main():
                 column = pos[0] // (GameMap.tileWidth)
                 row = pos[1] // (GameMap.tileHeight)
                 # Set that location to one
+
                 grid[row][column] = 1
+                if(interchange == False):
+                    grid[row][column].changeCharacter(character1)
+
                 print("Click ", pos, "Grid coordinates: ", row, column)
 
         # Set the screen background
@@ -138,14 +162,16 @@ def main():
         for row in range(GameMap.gridHeight):
             for column in range(GameMap.gridWidth):
                 color = BLACK
-                if grid[row][column] == 1:
-                    color = GREEN
+
                 pygame.draw.rect(screen,
                                  color,
                                  [(GameMap.tileWidth) * column,
                                   (GameMap.tileHeight) * row,
                                   GameMap.tileWidth,
                                   GameMap.tileHeight])
+                if grid[row][column] == 1:
+                    screen.blit(image,((column*GameMap.tileHeight)
+                                        , (row*GameMap.tileWidth)))
 
         # Limit to 60 frames per second
         clock.tick(60)
