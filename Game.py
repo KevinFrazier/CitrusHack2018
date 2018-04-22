@@ -122,14 +122,15 @@ def startGame():
                 # Change the x/y screen coordinates to grid coordinates
                 column = pos[0] // GameMap.tileWidth
                 row = pos[1] // GameMap.tileHeight
+                clickedTile = grid[row][column]
 
 
-                    #if trying to attack
+                #if trying to attack
                 if theGame.currentMode is 1:
                     if currentPlayer.getChosenTile() is not None:
-                        if grid[row][column].isfilled is True:
+                        if clickedTile.isfilled is True and currentPlayer.isInTeam(clickedTile.character) is False:
                             print("Attacking")
-                            result = GameMap.attackCharacter(grid[row][column].character, currentPlayer.getChosenTile())
+                            result = GameMap.attackCharacter(clickedTile, currentPlayer.getChosenTile())
                             if result:
                                 theGame.changeMode(2)
                         else:
@@ -141,7 +142,7 @@ def startGame():
                 #trying to move
                 elif theGame.currentMode is 0:
                     if currentPlayer.getChosenTile() is not None:
-                        if grid[row][column].isfilled is True:
+                        if grid[row][column].isfilled is False:
                             print("Moving")
                             result =  GameMap.moveCharacter(currentPlayer.getChosenTile(), currentPlayer.getChosenTile().posX,
                                               currentPlayer.getChosenTile().posY, column, row)
