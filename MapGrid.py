@@ -14,7 +14,7 @@ class MapGrid:
             self.grid.append([])
             for column in range(self.gridWidth):
                 temp = Tile(tilesize, tilesize, 0, 0, column, row, True)
-                temp.changeBackground('Square.jpg')
+                temp.changeBackground('Square with outline.png')
                 self.grid[row].append(temp)  # Append a cell
 
     def moveCharacter(self, player, fromX, fromY, toX, toY):

@@ -7,6 +7,7 @@ class Tile:
 
         # background image (string of image in directory)
         self.background = bg
+        # self.changeBackground(self.background)
 
         # character object
         self.character = chara
@@ -29,7 +30,12 @@ class Tile:
 
     def changeBackground(self, background):
         self.background = pygame.image.load(background)
+        '''
+        need to skew
+        '''
+        self.background = pygame.transform.rotate(self.background,30)
         self.background = pygame.transform.scale(self.background, (self.width, self.height))
+
 
     def changeCharacter(self, character):
         self.character = character

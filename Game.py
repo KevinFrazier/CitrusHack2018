@@ -35,6 +35,8 @@ moveObject(position):
 '''
 
 def startGame():
+
+
     # colors
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
@@ -51,11 +53,11 @@ def startGame():
 
     clock = pygame.time.Clock()
     totalUnits = 0
-    character1 = Character('Montblanc.jpg', 100, 10, 1, 1, 1, 3,totalUnits) #image, hp, atk, mp, abilities, movement, range
+    character1 = Character('IronOcto.png', 100, 10, 1, 1, 1, 3,totalUnits) #image, hp, atk, mp, abilities, movement, range
     totalUnits += 1
-    character2 = Character('shara.jpg', 100, 10, 1, 1, 1, 3,totalUnits)
+    character2 = Character('NinjaOcto.png', 100, 10, 1, 1, 1, 3,totalUnits)
     totalUnits += 1
-    character3 = Character('circle.png',100, 10, 1, 1, 1, 3,totalUnits)
+    character3 = Character('MegaOcto.png',100, 10, 1, 1, 1, 3,totalUnits)
     #player1 init
     player1 = grid[1][2]
     player1.changeCharacter(character1)
@@ -99,8 +101,16 @@ def startGame():
     # Loop until the user clicks the close button.
     done = False
     # -------- Main Program Loop -----------
+    printPlayer = False
     while not done:
         currentPlayer = theGame.getCurrentPlayer()
+
+        if(not printPlayer):
+            print(currentPlayer.player)
+            print("TEAM: ")
+            print(currentPlayer.getTeam)
+            printPlayer = True
+
         # print("WHOS TURN: ")
         # print(currentPlayer.player)
         for event in pygame.event.get():  # User did something
@@ -115,6 +125,11 @@ def startGame():
                         theGame.changeMode(1)
                 if event.key is pygame.K_c: #END TURN
                     print("ENDING TURN")
+                    theGame.changeTurn()
+                    theGame.startTurn()
+
+                if event.key is pygame.K_q:
+                    printPlayer = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # User clicks the mouse. Get the position
@@ -126,6 +141,8 @@ def startGame():
 
 
                 #if trying to attack
+
+
                 if theGame.currentMode is 1:
                     if currentPlayer.getChosenTile() is not None:
                         if clickedTile.isfilled is True and currentPlayer.isInTeam(clickedTile.character) is False:
@@ -139,6 +156,9 @@ def startGame():
                             currentPlayer.highlightedTile = None
                     else:
                         theGame.changeMode(2)
+                        currentPlayer.getChosenTile().changeHighlighted(False)
+                        currentPlayer.highlightedTile = None
+
                 #trying to move
                 elif theGame.currentMode is 0:
                     if currentPlayer.getChosenTile() is not None:
@@ -155,6 +175,8 @@ def startGame():
                             currentPlayer.highlightedTile = None
                     else:
                         theGame.changeMode(2)
+                        currentPlayer.getChosenTile().changeHighlighted(False)
+                        currentPlayer.highlightedTile = None
 
                 elif theGame.currentMode is 2:
                     print("IS FILLED")
@@ -162,11 +184,27 @@ def startGame():
                     currentTile = grid[row][column]
                     print("player's team: ")
                     print(currentPlayer.getTeam())
-                    if currentPlayer.isInTeam(currentTile.character):
-                        print("inside")
-                        currentTile.changeHighlighted(True)
-                        currentPlayer.lookAtTile(currentTile)
+                    if currentPlayer.getChosenTile() is not None:
                         theGame.changeMode(2)
+                        currentPlayer.getChosenTile().changeHighlighted(False)
+                        currentPlayer.highlightedTile = None
+                    elif currentPlayer.isInTeam(currentTile.character):
+                            theGame.changeMode(2)
+                            if currentPlayer.getChosenTile() is not None:
+                                currentPlayer.getChosenTile().changeHighlighted(False)
+                            currentPlayer.highlightedTile = None
+                            currentTile.changeHighlighted(True)
+                            currentPlayer.lookAtTile(currentTile)
+                            theGame.changeMode(2)
+                    elif clickedTile.isfilled is False:
+                        print("did nothing")
+                    else:
+                        print("======================EDGE CASE==============================")
+                        theGame.changeMode(2)
+                        if(currentPlayer.getChosenTile() is not None):
+                            currentPlayer.getChosenTile().changeHighlighted(False)
+                        currentPlayer.highlightedTile = None
+
                 else:
                     print("WTF")
                 #  else:
@@ -184,7 +222,7 @@ def startGame():
                 print("Click ", pos, "Grid coordinates: ", row, column)
 
         # Set the screen background
-        screen.fill(BLACK)
+        screen.fill((255,255,255))
 
         #drawing!
         # Draw the grid
@@ -201,97 +239,112 @@ def startGame():
                 #Move
                 if temp.isHighlighted() is True:
                     # print("HIGHLIGHTED")
-                    pygame.draw.rect(screen, (0, 255, 0),
+                    temp.changeBackground('green.jpg')
+                    screen.blit(temp.background,
                                      [GameMap.tileWidth * column, GameMap.tileHeight * row, GameMap.tileWidth,
                                       GameMap.tileHeight])
+                    temp.changeBackground('Square with outline.png')
                 else:
-                    pygame.draw.rect(screen,(255,255,255),[GameMap.tileWidth * column,GameMap.tileHeight * row,GameMap.tileWidth,GameMap.tileHeight])
+                    screen.blit(temp.background, ((column * GameMap.tileWidth), (row * GameMap.tileHeight)) )
+                    #pygame.draw.rect(screen,(255,255,255),[GameMap.tileWidth * column,GameMap.tileHeight * row,GameMap.tileWidth,GameMap.tileHeight])
 
                 if temp.isFilled() is True:
+                    if(currentPlayer.isInTeam(temp.character)):
+                        if(currentPlayer.player is 1):
+                            temp.changeBackground('blue.png')
+                        else:
+                            temp.changeBackground('red.jpg')
+                    screen.blit(temp.background, ((column * GameMap.tileWidth), (row * GameMap.tileHeight)))
                     screen.blit(temp.character.image, ((column * GameMap.tileWidth), (row * GameMap.tileHeight)))
+                    temp.changeBackground('Square with outline.png')
 
         currentTile = currentPlayer.getChosenTile()
         if(currentTile is not None):
             if theGame.currentMode is 0:
-                print("in here")
-
+                # print("in here")
+                currentTile.changeBackground('blue.png')
                 position = currentPlayer.getChosenTile().getPosition()
-                print("movement:")
-                print(currentPlayer.getChosenTile().character.movement)
+                # print("movement:")
+                # print(currentPlayer.getChosenTile().character.movement)
                 for i in range(currentTile.character.movement):
-                    pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * position[1],
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * position[1],
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * position[1],
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * position[1],
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] - i -1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] - i -1),
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] + i +1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] + i +1),
                                       GameMap.tileWidth, GameMap.tileHeight])
 
                 for i in range(currentTile.character.movement - 1):
-                    pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] - i -1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] - i -1),
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] + i+1) ,
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] + i+1) ,
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] + i+1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] + i+1),
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (0,0,255),
-                                     [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] - i-1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] - i-1),
                                       GameMap.tileWidth, GameMap.tileHeight])
 
-                pygame.draw.rect(screen, (0, 255, 0),
-                                 [GameMap.tileWidth * position[0], GameMap.tileHeight * position[1], GameMap.tileWidth,
+                currentTile.changeBackground('green.jpg')
+                screen.blit(currentTile.background,
+                            [GameMap.tileWidth * position[0], GameMap.tileHeight * position[1], GameMap.tileWidth,
                                   GameMap.tileHeight])
 
                 screen.blit(currentTile.character.image,
                             ((position[0] * GameMap.tileWidth), (position[1] * GameMap.tileHeight)))
+                currentTile.changeBackground('Square with outline.png')
 
             if theGame.currentMode is 1:
-                print("in here")
-
+                # print("in here")
+                currentTile.changeBackground('red.jpg')
                 position = currentPlayer.getChosenTile().getPosition()
-                print("range:")
-                print(currentPlayer.getChosenTile().character.range)
+                # print("range:")
+                # print(currentPlayer.getChosenTile().character.range)
                 for i in range(currentTile.character.range):
-                    pygame.draw.rect(screen, (255, 0, 0),
+                    screen.blit(currentTile.background,
                                      [GameMap.tileWidth * (position[0] - i -1), GameMap.tileHeight * position[1],
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] + i +1), GameMap.tileHeight * position[1],
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] + i +1), GameMap.tileHeight * position[1],
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] - i-1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] - i-1),
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] + i+1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * position[0], GameMap.tileHeight * (position[1] + i+1),
                                       GameMap.tileWidth, GameMap.tileHeight])
 
                 for i in range(currentTile.character.range - 1):
-                    pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] - i-1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] - i-1),
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] + i+1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] + i+1), GameMap.tileHeight * (position[1] + i+1),
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] + i+1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] + i+1),
                                       GameMap.tileWidth, GameMap.tileHeight])
-                    pygame.draw.rect(screen, (255, 0, 0),
-                                     [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] - i -1),
+                    screen.blit(currentTile.background,
+                                [GameMap.tileWidth * (position[0] - i-1), GameMap.tileHeight * (position[1] - i -1),
                                       GameMap.tileWidth, GameMap.tileHeight])
-                pygame.draw.rect(screen, (0, 255, 0),
-                                 [GameMap.tileWidth * position[0], GameMap.tileHeight * position[1], GameMap.tileWidth,
+
+                currentTile.changeBackground('green.jpg')
+                screen.blit(currentTile.background,
+                            [GameMap.tileWidth * position[0], GameMap.tileHeight * position[1], GameMap.tileWidth,
                                   GameMap.tileHeight])
 
                 screen.blit(currentTile.character.image,
                             ((position[0] * GameMap.tileWidth), (position[1] * GameMap.tileHeight)))
+                currentTile.changeBackground('Square with outline.png')
 
         # Limit to 60 frames per second
         clock.tick(60)

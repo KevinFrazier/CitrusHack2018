@@ -26,7 +26,7 @@ class GameSequence:
         MOVE = 0
 
         self.modes = [MOVE, ATTACK,NOTHING]
-        self.currentMode = MOVE
+        self.currentMode = NOTHING
 
     def changeMode(self,number):
         self.currentMode = self.modes[number]
