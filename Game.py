@@ -46,7 +46,7 @@ def startGame():
     3. manipulating objects in grid
     '''
 
-    GameMap = MapGrid(50, 50, 20)
+    GameMap = MapGrid(10, 10, 100)
     grid = GameMap.grid
 
     clock = pygame.time.Clock()
@@ -126,10 +126,12 @@ def startGame():
                 if grid[row][column].isfilled is True:
                     #if trying to attack
                     if theGame.currentMode is 1:
-                        print("Attacking")
+                        if currentPlayer.getChosenTile is not None:
+                            print("Attacking")
                     #trying to move
                     if theGame.currentMode is 0:
-                        print("Moving")
+                        if currentPlayer.getChosenTile is not None:
+                            print("Moving")
                     print("IS FILLED")
                     #hes trying to click on a unit
                     currentTile = grid[row][column]
@@ -143,8 +145,9 @@ def startGame():
                         print("not in team")
                 else:
                     if theGame.currentMode is not 2:
-                        theGame.changeMode(2)
-                        currentPlayer.getChosenTile().changeHighlighted(False)
+                        if currentPlayer.getChosenTile is not None:
+                            theGame.changeMode(2)
+                            currentPlayer.getChosenTile().changeHighlighted(False)
 
                 #     if GameMap.attackCharacter(player2, player1) is False:
                 #         print("Not in range")
